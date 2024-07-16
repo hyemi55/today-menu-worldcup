@@ -1,0 +1,16 @@
+#container {
+    height: max-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+#start {
+    display: inline;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 45px;
+    background-color: rgb(254, 201, 219);
+    
+}
