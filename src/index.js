@@ -22,14 +22,16 @@ function Menu(props) {
     return (
         <>
             <button onClick={()=>{
-                let tmp = props.count + 2;
-                let pass = props.pass;
-                props.setParent({count: tmp, pass: pass.concat([props.menu1])})
+                let tmp = props.pState.count + 1;
+                let pass = props.pState.pass;
+                (tmp <= props.pState.round/2) ? props.setParent({count: tmp, pass: pass.concat([props.menu1])}) 
+                                            : props.setParent({round: props.pState.round/2, count: 1, pass: [], candidate: pass.concat(props.menu1).sort(() => Math.random() - 0.5)});
             }}>{props.menu1}</button>
             <button onClick={()=>{
-                let tmp = props.count + 2;
-                let pass = props.pass;
-                props.setParent({count: tmp, pass: pass.concat([props.menu2])})
+                let tmp = props.pState.count + 1;
+                let pass = props.pState.pass;
+                (tmp <= props.pState.round/2) ? props.setParent({count: tmp, pass: pass.concat([props.menu2])}) 
+                                            : props.setParent({round: props.pState.round/2, count: 1, pass: [], candidate: pass.concat(props.menu2).sort(() => Math.random() - 0.5)});
             }}>{props.menu2}</button>
         </>
     )
@@ -42,13 +44,14 @@ class App extends React.Component {
             isStart: false,
             isSelected: false,
             selectedLocal: '',
-            count: 0,
+            round: 8,
+            count: 1,
+            menu: ['떡볶이', '짜장면', '치킨', '햄버거', '돈까스', '초밥', '낙곱새', '삼겹살'],
             pass: [],
+            candidate: ['떡볶이', '짜장면', '치킨', '햄버거', '돈까스', '초밥', '낙곱새', '삼겹살'],
+            localArray: ['안암', '포항'],
         };
     }
-
-    localArray = ['안암', '포항'];
-    menu = ['떡볶이', '짜장면', '국밥', '치킨', '햄버거', '닭갈비', '돈까스', '초밥', '낙곱새', '삼겹살'];
 
     render() {
         if (!this.state.isStart) {
@@ -58,17 +61,27 @@ class App extends React.Component {
         } else if (!this.state.isSelected) {
             return (
                 <>
-                    {this.localArray.map((i) => {
+                    {this.state.localArray.map((i) => {
                         return <Local localName={i} onClick={() => this.setState({isSelected: true, selectedLocal: i})}/>
                         })
                     }
                 </>
             )
         } else {
+            if (this.state.round === 1) {
+                return (
+                    <>
+                        <div>승리 메뉴는</div>
+                        <div>{this.state.candidate[0]}</div>
+                    </>
+                )
+            }
             return (
                 <>
-                    <Menu menu1={this.menu[this.state.count]} menu2={this.menu[this.state.count+1]} 
-                        count={this.state.count} pass={this.state.pass} setParent={(i)=>{this.setState(i)}} />
+                    <div>{this.state.round}강</div>
+                    <div>{this.state.count} / {this.state.round / 2}</div>
+                    <Menu menu1={this.state.candidate[2 * (this.state.count-1)]} menu2={this.state.candidate[2 * (this.state.count-1) + 1]}
+                        pState={this.state} setParent={(i)=>{this.setState(i)}} />
                 </>
             )
         }
