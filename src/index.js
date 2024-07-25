@@ -5,9 +5,7 @@ import './index.css';
 class Header extends React.Component {
     render() {
         return (
-            <div id='container'>
-                <button id='start' onClick={() => this.props.onClick()}>최애의 메뉴</button>
-            </div>
+            <button id='start' onClick={() => this.props.onClick()}>최애의 메뉴</button>
         )
     }
 }
@@ -42,48 +40,71 @@ class App extends React.Component {
         super(props);
         this.state = {
             isStart: false,
-            isSelected: false,
+            isLocalSelected: false,
+            isRoundSelected: false,
             selectedLocal: '',
-            round: 8,
+            round: 16,
             count: 1,
-            menu: ['떡볶이', '짜장면', '치킨', '햄버거', '돈까스', '초밥', '낙곱새', '삼겹살'],
             pass: [],
-            candidate: ['떡볶이', '짜장면', '치킨', '햄버거', '돈까스', '초밥', '낙곱새', '삼겹살'],
-            localArray: ['안암', '포항'],
+            candidate: [],
         };
     }
+
+    menu = ['떡볶이', '해장국', '짜장면', '치킨', '우동', '햄버거', '돈까스', '국수', '초밥', '낙곱새', '삼겹살', '찜닭', '냉면', '김밥', '국밥', '샌드위치'];
+    localArray = ['안암', '포항'];
 
     render() {
         if (!this.state.isStart) {
             return (
-                <Header onClick = {() => {this.setState({isStart:true,})}}/>
+                <div className='container'>
+                    <Header onClick = {() => {this.setState({isStart:true,})}}/>
+                </div>
             )
-        } else if (!this.state.isSelected) {
+        } else if (!this.state.isLocalSelected) {
             return (
-                <>
-                    {this.state.localArray.map((i) => {
-                        return <Local localName={i} onClick={() => this.setState({isSelected: true, selectedLocal: i})}/>
+                <div className='container'>
+                    {this.localArray.map((i) => {
+                        return <Local localName={i} onClick={() => this.setState({isLocalSelected: true, selectedLocal: i})}/>
                         })
                     }
-                </>
+                </div>
+            )
+        } else if (!this.state.isRoundSelected) {
+            let len = this.menu.length;
+            let arr = [];
+            for (let i = 4; i <= len; i=i*2) {
+                arr.push([i]);
+            }
+            return (
+                <div className='container'>
+                    {arr.map((i) => <button onClick={()=> {
+                                        let tmp = this.menu.sort(() => Math.random() - 0.5);
+                                        tmp = tmp.slice(0, i);
+                                        this.setState({isRoundSelected: true, round: i, candidate: tmp});
+                                    }}>{i}강</button>)}
+                </div>
             )
         } else {
             if (this.state.round === 1) {
                 return (
-                    <>
+                    <div className='container' id='winner'>
                         <div>승리 메뉴는</div>
                         <div>{this.state.candidate[0]}</div>
-                    </>
+                    </div>
                 )
             }
-            return (
-                <>
-                    <div>{this.state.round}강</div>
-                    <div>{this.state.count} / {this.state.round / 2}</div>
-                    <Menu menu1={this.state.candidate[2 * (this.state.count-1)]} menu2={this.state.candidate[2 * (this.state.count-1) + 1]}
-                        pState={this.state} setParent={(i)=>{this.setState(i)}} />
-                </>
-            )
+            else {
+                return (
+                    <div className='container' id='tournament'>
+                        <div>{this.state.round}강</div>
+                        <div>{this.state.count} / {this.state.round / 2}</div>
+                        <div>
+                            <Menu menu1={this.state.candidate[2 * (this.state.count-1)]} menu2={this.state.candidate[2 * (this.state.count-1) + 1]}
+                                pState={this.state} setParent={(i)=>{this.setState(i)}} />
+                        </div>
+                    </div>
+                )
+            }
         }
     }
 }
